@@ -9,6 +9,9 @@ class Contact:
     def __init__(self, name, number):
         self.name = name
         self.number = number
+     
+    def __str__(self): #fixed
+        return f"{self.name}: {self.number}"
 
 class Node:
     '''
@@ -38,7 +41,7 @@ class HashTable:
         print_table(): Prints the structure of the hash table.
     '''
     
-    def __init__(self, size, data=None):
+    def __init__(self, size): #I took out the data=None, because I was not using in this
         self.size = size
         self.data = [None] * size
     #hash function    
@@ -49,26 +52,32 @@ class HashTable:
         return total % self.size
     #insert function
     def insert(self, key, value):
+        new_contact = Contact(key, value) #I created this so the contact could be stored in a correct way, before was printing just the number without the name when I tried to 
         index = self.hash_function(key)
         current = self.data[index]
         if self.data[index] is None:
-            self.data[index] = Node(key, value)
+            self.data[index] = Node(key, new_contact) #added this so the contact will be added to the index
             return
+        
         while current:
             if current.key == key:
-                current.value = value
+                current.value = new_contact #update to new contact
                 return
+            
             if current.next is None:
                 break
             current = current.next
-        current.next = Node(key, value)
+        current.next = Node(key, new_contact) #I also changed this Node to new_contact, so there are no issues
+
     def search(self, key):
         index = self.hash_function(key)
         current = self.data[index]
+
         while current:
             if current.key == key:
-                return current
+                return current.value #I forgot to put .value
             current = current.next
+
         return None
     def print_table(self):
         for i in range(self.size):
@@ -78,7 +87,7 @@ class HashTable:
                 print("Empty")
             else:
                 while current:
-                    print(f"({current.key}: {current.value}) ")
+                    print(f"{current.value}") #it doesn't need the key anymore, when it had it duplicated the name, so I can just remove the current.key
                     current = current.next
     
     
@@ -92,7 +101,7 @@ table.insert("Rebecca", "111-555-0002")
 table.insert("Amy", "111-222-3333") 
 table.insert("May", "222-333-1111")
 #Edge 2: Duplicate Keys
-table.insert("Rebecca", "999-444-9999")
+table.insert("Rebecca", "999-444-9999") 
 table.print_table()
 
 
@@ -103,7 +112,7 @@ while i <len(search_names):
     name = search_names[i]
     contact = table.search(name)
     if contact is not None:
-        print(f"Search result: {contact.key}", contact.value)
+        print(f"Search result:", contact)
     else:
         print("Search result: None")
     i += 1
